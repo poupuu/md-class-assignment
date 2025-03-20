@@ -17,9 +17,17 @@ def encode(df):
       df[column] = loaded_encoder.fit_transform(df[column])
   return df
 
+# def normalize(df):
+#   df = loaded_scaler.transform(df)
+#   return df
 def normalize(df):
-  df = loaded_scaler.transform(df)
-  return df
+    # Convert the DataFrame to a NumPy array before scaling
+    scaled_data = loaded_scaler.transform(df)
+    
+    # Optionally, convert the scaled data back to a DataFrame
+    df_scaled = pd.DataFrame(scaled_data, columns=df.columns)
+    
+    return df_scaled
 
 def predict_with_model(model, user_input):
   prediction = model.predict(user_input)
