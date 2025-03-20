@@ -13,7 +13,7 @@ def input_to_df(input_data):
                'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS']
     return pd.DataFrame([input_data], columns=columns)
 
-# Function to encode categorical variables
+# Define a custom encoding function
 def encode(df):
     # Define the categorical columns explicitly
     categorical_columns = [
@@ -21,15 +21,22 @@ def encode(df):
         'SMOKE', 'SCC', 'CALC', 'MTRANS'
     ]
     
+    # Create a mapping dictionary for each categorical column
+    mapping = {
+        'Gender': {'Male': 0, 'Female': 1, 'Unknown': 2},
+        'family_history_with_overweight': {'yes': 0, 'no': 1, 'Unknown': 2},
+        'FAVC': {'yes': 0, 'no': 1, 'Unknown': 2},
+        'CAEC': {'Sometimes': 0, 'Frequently': 1, 'Always': 2, 'no': 3, 'Unknown': 4},
+        'SMOKE': {'yes': 0, 'no': 1, 'Unknown': 2},
+        'SCC': {'yes': 0, 'no': 1, 'Unknown': 2},
+        'CALC': {'Sometimes': 0, 'no': 1, 'Frequently': 2, 'Always': 3, 'Unknown': 4},
+        'MTRANS': {'Public_Transportation': 0, 'Automobile': 1, 'Walking': 2, 'Motorbike': 3, 'Bike': 4, 'Unknown': 5}
+    }
+    
+    # Apply the mapping to each column
     for column in categorical_columns:
-        if df[column].dtype == "object":
-            # Map unseen categories to "Unknown"
-            df[column] = df[column].apply(
-                lambda x: x if x in loaded_encoder.classes_ else "Unknown"
-            )
-            
-            # Transform the column using the encoder
-            df[column] = loaded_encoder.transform(df[[column]])
+        df[column] = df[column].apply(lambda x: mapping[column].get(x, mapping[column]['Unknown']))
+    
     return df
 
 # Function to normalize numerical features
