@@ -27,12 +27,24 @@ def input_to_df(input_data):
     return pd.DataFrame([input_data], columns=columns)
 
 # Function to encode categorical variables
+# Function to encode categorical variables safely
 def encode(df):
     categorical_columns = [
         'Gender', 'SMOKE', 'family_history_with_overweight', 
         'FAVC', 'CAEC', 'SCC', 'CALC', 'MTRANS'
     ]
-    df[categorical_columns] = ordinal_encoder.transform(df[categorical_columns])
+
+    # Ensure all categorical columns exist in the DataFrame
+    missing_cols = [col for col in categorical_columns if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing categorical columns: {missing_cols}")
+
+    try:
+        df[categorical_columns] = ordinal_encoder.transform(df[categorical_columns])
+    except ValueError as e:
+        st.error(f"Encoding error: {e}. Check if the input values match training data.")
+        return df  # Return unencoded df to avoid crashing
+    
     return df
 
 # Function to normalize numerical features
