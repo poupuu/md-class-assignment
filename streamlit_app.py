@@ -15,9 +15,21 @@ def input_to_df(input_data):
 
 # Function to encode categorical variables
 def encode(df):
-    for column in df.columns:
+    # Define the categorical columns explicitly
+    categorical_columns = [
+        'Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 
+        'SMOKE', 'SCC', 'CALC', 'MTRANS'
+    ]
+    
+    for column in categorical_columns:
         if df[column].dtype == "object":
-            df[column] = loaded_encoder.transform(df[[column]])  # Use double brackets to pass a DataFrame
+            # Map unseen categories to "Unknown"
+            df[column] = df[column].apply(
+                lambda x: x if x in loaded_encoder.classes_ else "Unknown"
+            )
+            
+            # Transform the column using the encoder
+            df[column] = loaded_encoder.transform(df[[column]])
     return df
 
 # Function to normalize numerical features
