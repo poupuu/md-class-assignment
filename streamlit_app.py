@@ -34,19 +34,22 @@ def encode(df):
         'FAVC', 'CAEC', 'SCC', 'CALC', 'MTRANS'
     ]
 
-    # Ensure all categorical columns exist in the DataFrame
+    # Ensure categorical columns exist in the DataFrame
     missing_cols = [col for col in categorical_columns if col not in df.columns]
     if missing_cols:
         raise ValueError(f"Missing categorical columns: {missing_cols}")
 
-    try:
-        df[categorical_columns] = ordinal_encoder.transform(df[categorical_columns])
-    except ValueError as e:
-        st.error(f"Encoding error: {e}. Check if the input values match training data.")
-        return df  # Return unencoded df to avoid crashing
-    
-    return df
+    # Reorder columns to match training order
+    df = df[categorical_columns]
 
+    try:
+        df_encoded = pd.DataFrame(ordinal_encoder.transform(df), columns=categorical_columns)
+    except ValueError as e:
+        st.error(f"Encoding error: {e}. Ensure input values match training data.")
+        return df  # Return original DataFrame to prevent crashing
+
+    return df_encoded
+    
 # Function to normalize numerical features
 def normalize(df):
     scaled_data = scaler.transform(df)
