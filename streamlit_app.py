@@ -30,15 +30,13 @@ def encode(df):
 
 # Function to normalize numerical features
 def normalize(df):
-    scaled_data = scaler.transform(df)
-    df_scaled = pd.DataFrame(scaled_data, columns=df.columns)
-    return df_scaled
+    df = scaler.transform(df)
+    return df
 
 # Function to predict using the trained model
 def predict_with_model(model, user_input):
     prediction = model.predict(user_input)
-    prediction_proba = model.predict_proba(user_input)
-    return prediction[0], prediction_proba[0]
+    return prediction[0]
 
 # Main function to run the Streamlit app
 def main():
@@ -85,18 +83,16 @@ def main():
     user_input = [
         Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS
     ]
-    df_user_input = input_to_df(user_input)
+    df = input_to_df(user_input)
 
     # Display user input in table form
-    st.subheader("User Input Summary")
-    st.write(df_user_input)
+    st.subheader("Data input by user")
+    st.write(df)
 
     # Encode and Normalize the user input
-    df_encoded = encode(df_user_input)
-    df_normalized = normalize(df_encoded)
-
-    # Predict using the model
-    prediction, prediction_proba = predict_with_model(model, df_normalized)
+    df = encode(df)
+    df = normalize(df)
+    prediction = predict_with_model(model, df)
 
     # Map the predicted class to its label
     class_labels = {
@@ -118,8 +114,8 @@ def main():
     st.write(df_prediction_proba)
 
     # Display the final predicted class
-    st.subheader("Final Prediction")
-    st.write(f"The predicted obesity level is: **{predicted_class_label}**")
+    st.subheader("Obesity Prediction")
+    st.write(f"The predicted output is: ",prediction)
 
 if __name__ == "__main__":
     main()
