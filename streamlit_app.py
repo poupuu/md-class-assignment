@@ -4,10 +4,9 @@ import pandas as pd
 import numpy as np
 
 # Load the pre-trained model, encoder, scaler, and target encoder
-model = joblib.load('trained_model_tuned.pkl')
+model = joblib.load('trained_model.pkl')
 ordinal_encoder = joblib.load('encode.pkl')
 scaler = joblib.load('scaling.pkl')
-target_encoder = joblib.load('target_encode.pkl')
 
 # Function to convert user input into a DataFrame
 def input_to_df(input_data):
