@@ -1,12 +1,22 @@
 import streamlit as st
 import joblib
 import pandas as pd
-import numpy as np
 
-# Load the pre-trained model, encoder, scaler, and target encoder
-model = joblib.load('trained_model.pkl')
+# Load the pre-trained model, encoder, and scaler
+model = joblib.load('best_model.pkl')
 ordinal_encoder = joblib.load('encode.pkl')
 scaler = joblib.load('scaling.pkl')
+
+# Define class labels
+class_labels = {
+    0: 'Insufficient Weight',
+    1: 'Normal Weight',
+    2: 'Overweight Level I',
+    3: 'Overweight Level II',
+    4: 'Obesity Type I',
+    5: 'Obesity Type II',
+    6: 'Obesity Type III'
+}
 
 # Function to convert user input into a DataFrame
 def input_to_df(input_data):
@@ -18,38 +28,37 @@ def input_to_df(input_data):
 
 # Function to encode categorical variables
 def encode(df):
-    # Define the categorical columns explicitly
     categorical_columns = [
-        'Gender', 'family_history_with_overweight', 'FAVC', 'CAEC', 
-        'SMOKE', 'SCC', 'CALC', 'MTRANS'
+        'Gender', 'SMOKE', 'family_history_with_overweight', 
+        'FAVC', 'CAEC', 'SCC', 'CALC', 'MTRANS'
     ]
-    
-    # Encode categorical columns using the loaded OrdinalEncoder
     df[categorical_columns] = ordinal_encoder.transform(df[categorical_columns])
     return df
 
 # Function to normalize numerical features
 def normalize(df):
-    df = scaler.transform(df)
-    return df
+    scaled_data = scaler.transform(df)
+    df_scaled = pd.DataFrame(scaled_data, columns=df.columns)
+    return df_scaled
 
 # Function to predict using the trained model
 def predict_with_model(model, user_input):
-    prediction = model.predict(user_input)
-    return prediction[0]
+    prediction_proba = model.predict_proba(user_input)[0]
+    highest_class = prediction_proba.argmax()
+    return highest_class, prediction_proba
 
 # Main function to run the Streamlit app
 def main():
     st.title('Obesity Level Prediction App')
     st.info('This app predicts obesity levels based on user input.')
 
-    # Raw Data Display
+    # Raw Data Display (Optional)
     with st.expander('**Raw Data**'):
         st.write("Below is the raw dataset used for training the model.")
         df = pd.read_csv('ObesityDataSet_raw_and_data_sinthetic.csv')
         st.write(df)
 
-    # Data Visualization
+    # Data Visualization (Optional)
     with st.expander('**Data Visualization**'):
         st.write("Visualization of Weight vs Height, colored by Obesity Level.")
         st.scatter_chart(
@@ -83,30 +92,21 @@ def main():
     user_input = [
         Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS
     ]
-    df = input_to_df(user_input)
+    df_user_input = input_to_df(user_input)
 
     # Display user input in table form
-    st.subheader("Data input by user")
-    st.write(df)
+    st.subheader("User Input Summary")
+    st.write(df_user_input)
 
     # Encode and Normalize the user input
-    df = encode(df)
-    df = normalize(df)
-    prediction = predict_with_model(model, df)
+    df_encoded = encode(df_user_input)
+    df_normalized = normalize(df_encoded)
+
+    # Predict using the model
+    highest_class, prediction_proba = predict_with_model(model, df_normalized)
 
     # Map the predicted class to its label
-    class_labels = {
-        0: 'Insufficient Weight',
-        1: 'Normal Weight',
-        2: 'Overweight Level I',
-        3: 'Overweight Level II',
-        4: 'Obesity Type I',
-        5: 'Obesity Type II',
-        6: 'Obesity Type III'
-    }
-
-    # Decode the predicted class
-    predicted_class_label = class_labels[prediction]
+    predicted_class_label = class_labels[highest_class]
 
     # Display prediction probabilities for each class
     st.subheader("Prediction Probabilities")
@@ -114,8 +114,8 @@ def main():
     st.write(df_prediction_proba)
 
     # Display the final predicted class
-    st.subheader("Obesity Prediction")
-    st.write(f"The predicted output is: ",prediction)
+    st.subheader("Final Prediction")
+    st.write(f"The predicted obesity level is: **{predicted_class_label}**")
 
 if __name__ == "__main__":
     main()
