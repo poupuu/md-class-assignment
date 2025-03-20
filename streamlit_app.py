@@ -2,103 +2,112 @@ import streamlit as st
 import joblib
 import pandas as pd
 
+# Load the pre-trained model, encoder, and scaler
 model = joblib.load('trained_model_tuned.pkl')
 loaded_encoder = joblib.load('encode.pkl')
 loaded_scaler = joblib.load('scaling.pkl')
 
-def input_to_df(input):
-  data = [input]
-  df = pd.DataFrame(data, columns = ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS'])
-  return df
+# Function to convert user input into a DataFrame
+def input_to_df(input_data):
+    columns = ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 
+               'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS']
+    return pd.DataFrame([input_data], columns=columns)
 
+# Function to encode categorical variables
 def encode(df):
-  for column in df.columns:
-    if df[column].dtype == "object":
-      df[column] = loaded_encoder.fit_transform(df[column])
-  return df
+    for column in df.columns:
+        if df[column].dtype == "object":
+            df[column] = loaded_encoder.transform(df[[column]])  # Use double brackets to pass a DataFrame
+    return df
 
-# def normalize(df):
-#   df = loaded_scaler.transform(df)
-#   return df
+# Function to normalize numerical features
 def normalize(df):
-    # Convert the DataFrame to a NumPy array before scaling
     scaled_data = loaded_scaler.transform(df)
-    
-    # Optionally, convert the scaled data back to a DataFrame
     df_scaled = pd.DataFrame(scaled_data, columns=df.columns)
-    
     return df_scaled
 
+# Function to predict using the trained model
 def predict_with_model(model, user_input):
-  prediction = model.predict(user_input)
-  return prediction[0]
+    prediction = model.predict(user_input)
+    prediction_proba = model.predict_proba(user_input)
+    return prediction[0], prediction_proba[0]
 
+# Main function to run the Streamlit app
 def main():
-  st.title('Machine Learning App')
-  
-  st.info('This app will predict your obesity level!')
-  
-  # Raw Data
-  with st.expander('**Data**'):
-    st.write('This is a raw data')
-    df = pd.read_csv('https://raw.githubusercontent.com/JeffreyJuinior/dp-machinelearning/refs/heads/master/ObesityDataSet_raw_and_data_sinthetic.csv')
-    df
-    st.write('**X**')
-    X = df.drop('NObeyesdad',axis=1)
-    X
-    st.write('**y**')
-    y = df['NObeyesdad']
-    y
-  
-  # Visualization
-  with st.expander('**Data Visualization**'):
-    st.scatter_chart(data=df, x = 'Height', y = 'Weight', color='NObeyesdad')
-  
-  # Input Data bu User
-  Age = st.slider('Age', min_value = 14, max_value = 61, value = 24)
-  Height = st.slider('Height', min_value = 1.45, max_value = 1.98, value = 1.7)
-  Weight = st.slider('Weight', min_value = 39, max_value = 173, value = 86)
-  FCVC = st.slider('FCVC', min_value = 1, max_value = 3, value = 2)
-  NCP = st.slider('NCP', min_value = 1, max_value = 4, value = 3)
-  CH2O = st.slider('CH2O', min_value = 1, max_value = 3, value = 2)
-  FAF = st.slider('FAF', min_value = 0, max_value = 3, value = 1)
-  TUE = st.slider('TUE', min_value = 0, max_value = 2, value = 1)
-  
-  Gender = st.selectbox('Gender', ('Male', 'Female'))
-  family_history_with_overweight = st.selectbox('Family history with overweight', ('yes', 'no'))
-  FAVC = st.selectbox('FAVC', ('yes', 'no'))
-  CAEC = st.selectbox('CAEC', ('Sometimes', 'Frequently', 'Always', 'no'))
-  SMOKE = st.selectbox('SMOKE', ('yes', 'no'))
-  SCC = st.selectbox('SCC', ('yes', 'no'))
-  CALC = st.selectbox('CALC', ('Sometimes', 'no', 'Frequently', 'Always'))
-  MTRANS = st.selectbox('MTRANS', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
+    st.title('Obesity Level Prediction App')
+    st.info('This app predicts obesity levels based on user input.')
 
-  # Input Data for Program
-  user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-  df = input_to_df(user_input)
+    # Raw Data Display
+    with st.expander('**Raw Data**'):
+        st.write("Below is the raw dataset used for training the model.")
+        df = pd.read_csv('ObesityDataSet_raw_and_data_sinthetic.csv')
+        st.write(df)
 
-  st.write('Data input by user')
-  df
+    # Data Visualization
+    with st.expander('**Data Visualization**'):
+        st.write("Visualization of Weight vs Height, colored by Obesity Level.")
+        st.scatter_chart(
+            data=df,
+            x='Height',
+            y='Weight',
+            color='NObeyesdad'
+        )
 
-  df = encode(df)
-  df = normalize(df)
-  prediction = predict_with_model(model, df)
-  
-  prediction_proba = model.predict_proba(df)
-  df_prediction_proba = pd.DataFrame(prediction_proba)
-  df_prediction_proba.columns = ['Insufficient Weight', 'Normal Weight', 'Overweight Level I', 'Overweight Level II', 'Obesity Type I', 'Obesity Type II', 'Obesity Type III']
-  df_prediction_proba.rename(columns={0: 'Insufficient Weight', 
-                                      1:'Normal Weight', 
-                                      2: 'Overweight Level I', 
-                                      3: 'Overweight Level II', 
-                                      4:'Obesity Type I', 
-                                      5:'Obesity Type II', 
-                                      6: 'Obesity Type III'})
+    # User Input Section
+    st.subheader("Input Your Data")
+    Age = st.slider('Age', min_value=14, max_value=61, value=24)
+    Height = st.slider('Height (m)', min_value=1.45, max_value=1.98, value=1.7)
+    Weight = st.slider('Weight (kg)', min_value=39, max_value=173, value=86)
+    FCVC = st.slider('Frequency of Consuming Vegetables (FCVC)', min_value=1, max_value=3, value=2)
+    NCP = st.slider('Number of Main Meals (NCP)', min_value=1, max_value=4, value=3)
+    CH2O = st.slider('Consumption of Water Daily (CH2O)', min_value=1, max_value=3, value=2)
+    FAF = st.slider('Physical Activity Frequency (FAF)', min_value=0, max_value=3, value=1)
+    TUE = st.slider('Time Using Technology Devices (TUE)', min_value=0, max_value=2, value=1)
 
-  st.write('Obesity Prediction')
-  df_prediction_proba
-  st.write('The predicted output is: ',prediction) 
-  
+    Gender = st.selectbox('Gender', ('Male', 'Female'))
+    family_history_with_overweight = st.selectbox('Family History with Overweight', ('yes', 'no'))
+    FAVC = st.selectbox('Frequent Consumption of High Caloric Food (FAVC)', ('yes', 'no'))
+    CAEC = st.selectbox('Consumption of Food Between Meals (CAEC)', ('Sometimes', 'Frequently', 'Always', 'no'))
+    SMOKE = st.selectbox('Smoking Habit (SMOKE)', ('yes', 'no'))
+    SCC = st.selectbox('Calories Consumption Monitoring (SCC)', ('yes', 'no'))
+    CALC = st.selectbox('Consumption of Alcohol (CALC)', ('Sometimes', 'no', 'Frequently', 'Always'))
+    MTRANS = st.selectbox('Transportation Used (MTRANS)', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
+
+    # Collect user input into a list
+    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
+    df_user_input = input_to_df(user_input)
+
+    # Display user input in table form
+    st.subheader("User Input Summary")
+    st.write(df_user_input)
+
+    # Encode and Normalize the user input
+    df_encoded = encode(df_user_input)
+    df_normalized = normalize(df_encoded)
+
+    # Predict using the model
+    prediction, prediction_proba = predict_with_model(model, df_normalized)
+
+    # Map the predicted class to its label
+    class_labels = {
+        0: 'Insufficient Weight',
+        1: 'Normal Weight',
+        2: 'Overweight Level I',
+        3: 'Overweight Level II',
+        4: 'Obesity Type I',
+        5: 'Obesity Type II',
+        6: 'Obesity Type III'
+    }
+
+    # Display prediction probabilities for each class
+    st.subheader("Prediction Probabilities")
+    df_prediction_proba = pd.DataFrame([prediction_proba], columns=class_labels.values())
+    st.write(df_prediction_proba)
+
+    # Display the final predicted class
+    st.subheader("Final Prediction")
+    predicted_class_label = class_labels[prediction]
+    st.write(f"The predicted obesity level is: **{predicted_class_label}**")
 
 if __name__ == "__main__":
-  main()
+    main()
