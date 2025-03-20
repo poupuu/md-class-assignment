@@ -2,18 +2,20 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-# Load the pre-trained model, encoder, and scaler
+# Load the pre-trained model, encoder, scaler, and target encoder
 model = joblib.load('trained_model_tuned.pkl')
-loaded_encoder = joblib.load('encode.pkl')
-loaded_scaler = joblib.load('scaling.pkl')
+ordinal_encoder = joblib.load('encode.pkl')
+scaler = joblib.load('scaling.pkl')
 
 # Function to convert user input into a DataFrame
 def input_to_df(input_data):
-    columns = ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 
-               'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS']
+    columns = [
+        'Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 
+        'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS'
+    ]
     return pd.DataFrame([input_data], columns=columns)
 
-# Define a custom encoding function
+# Function to encode categorical variables
 def encode(df):
     # Define the categorical columns explicitly
     categorical_columns = [
@@ -21,27 +23,13 @@ def encode(df):
         'SMOKE', 'SCC', 'CALC', 'MTRANS'
     ]
     
-    # Create a mapping dictionary for each categorical column
-    mapping = {
-        'Gender': {'Male': 0, 'Female': 1, 'Unknown': 2},
-        'family_history_with_overweight': {'yes': 0, 'no': 1, 'Unknown': 2},
-        'FAVC': {'yes': 0, 'no': 1, 'Unknown': 2},
-        'CAEC': {'Sometimes': 0, 'Frequently': 1, 'Always': 2, 'no': 3, 'Unknown': 4},
-        'SMOKE': {'yes': 0, 'no': 1, 'Unknown': 2},
-        'SCC': {'yes': 0, 'no': 1, 'Unknown': 2},
-        'CALC': {'Sometimes': 0, 'no': 1, 'Frequently': 2, 'Always': 3, 'Unknown': 4},
-        'MTRANS': {'Public_Transportation': 0, 'Automobile': 1, 'Walking': 2, 'Motorbike': 3, 'Bike': 4, 'Unknown': 5}
-    }
-    
-    # Apply the mapping to each column
-    for column in categorical_columns:
-        df[column] = df[column].apply(lambda x: mapping[column].get(x, mapping[column]['Unknown']))
-    
+    # Encode categorical columns using the loaded OrdinalEncoder
+    df[categorical_columns] = ordinal_encoder.transform(df[categorical_columns])
     return df
 
 # Function to normalize numerical features
 def normalize(df):
-    scaled_data = loaded_scaler.transform(df)
+    scaled_data = scaler.transform(df)
     df_scaled = pd.DataFrame(scaled_data, columns=df.columns)
     return df_scaled
 
@@ -93,7 +81,9 @@ def main():
     MTRANS = st.selectbox('Transportation Used (MTRANS)', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
 
     # Collect user input into a list
-    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
+    user_input = [
+        Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS
+    ]
     df_user_input = input_to_df(user_input)
 
     # Display user input in table form
@@ -118,6 +108,9 @@ def main():
         6: 'Obesity Type III'
     }
 
+    # Decode the predicted class
+    predicted_class_label = class_labels[prediction]
+
     # Display prediction probabilities for each class
     st.subheader("Prediction Probabilities")
     df_prediction_proba = pd.DataFrame([prediction_proba], columns=class_labels.values())
@@ -125,7 +118,6 @@ def main():
 
     # Display the final predicted class
     st.subheader("Final Prediction")
-    predicted_class_label = class_labels[prediction]
     st.write(f"The predicted obesity level is: **{predicted_class_label}**")
 
 if __name__ == "__main__":
