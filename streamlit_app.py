@@ -131,6 +131,9 @@ def main():
         "CALC": ["Sometimes", "Always"],
         "MTRANS": ["Public_Transportation", "Motorbike", "Walking", "Bike", "Car"],
     }
+
+    df = 
+    df = sca
     
     # for col, options in categorical_cols.items():
     #     user_input[col] = st.selectbox(col, options)
@@ -139,15 +142,15 @@ def main():
     user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
     
     #predict probabilities
-    st.header("Obesity Prediction")
+    st.write("Obesity Prediction")
     probabilities = model.predict_proba(user_input_scaled)
     prob_df = pd.DataFrame(probabilities, columns=target_mapping.keys()).T
     prob_df.columns = ["Probability"]
     st.table(prob_df)
     
-    # 8. Final Prediction
+    #prediction
     prediction = model.predict(user_input_scaled)[0]
-    st.write(f"The predicted output is: {prediction} ({target_mapping[prediction]})")
+    st.write(f"The predicted output is: ",prediction)
 
 if __name__ == "__main__":
     main()
