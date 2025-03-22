@@ -121,10 +121,10 @@ def main():
     
     #input data to df
     user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-    # df = input_user_to_df(user_input)
+    temp_df = input_user_to_df(user_input)
 
     st.write('Data input by user')
-    df
+    temp_df
     # #numerical inputs
     # numerical_cols = {
     #     "Age": (14, 61),
