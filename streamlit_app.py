@@ -26,14 +26,14 @@ def input_user_to_df(input_df):
 #preprocess
 def encode(df):
     for column in df.columns:
-        if df[column] = df["NObeyesdad"]:
+        if df[column] == df["NObeyesdad"]:
             df["NObeyesdad"] = target_encoder.fit_transform(df["NObeyesdad"])
         else:
             df[column] = label_encoder.fit_transform(df[column])
     return df
 
 def scaling(df):
-    if df[column] = df["Height"]:
+    if df[column] == df["Height"]:
         df["Height"] = standard_scaler.transform(df)
     else:
         df[column] = robust_scaler.transform(df)
