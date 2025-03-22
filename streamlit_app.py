@@ -6,50 +6,42 @@ import matplotlib.pyplot as plt
 import joblib
 
 #load .pkl
-def load_artifacts():
-    #scalers
-    with open("standard_scaler.pkl", "rb") as f:
-        standard_scaler = pickle.load(f)
-    
-    with open("robust_scaler.pkl", "rb") as f:
-        robust_scaler = pickle.load(f)
-    
-    #model
-    with open("fine_tuned_model.pkl", "rb") as f:
-        model = pickle.load(f)
-    
-    #encoders
-    with open("encoded_target_variable.pkl", "rb") as f:
-        target_mapping = pickle.load(f)
-    
-    with open("label_encoders.pkl", "rb") as f:
-        label_encoders = pickle.load(f)
-    
-    return standard_scaler, robust_scaler, model, target_mapping, label_encoders
+target_encoder = joblib.load("encoded_target_variable.pkl")
+label_encoder = joblib.load("label_encoders.pkl")
+standard_scaler = joblib.load("standard_scaler.pkl")
+robust_scaler = joblib.load("robust_scaler.pkl")
+model = joblib.load("fine_tuned_model.pkl")
 
-#load user input
-def load_input(user_input):
-    data = [user_input]
+# #load user input
+# def load_input(user_input):
+#     data = [user_input]
+#     df = pd.DataFrame(data, columns = ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS'])
+#     return df
+
+def input_user_to_df(input_df):
+    data = [input_df]
     df = pd.DataFrame(data, columns = ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS'])
     return df
 
 #preprocess
-def preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler):
-    #convert
-    for col, le in label_encoders.items():
-        if col in user_input:
-            user_input[col] = le.transform([user_input[col]])[0]
-    
-    #scaling
-    scaled_features = robust_scaler.transform(pd.DataFrame(user_input, index=[0]))
-    user_input_scaled = pd.DataFrame(scaled_features, columns=user_input.keys())
-    
-    #standard scaling
-    standard_scaling_columns = ["Height"]
-    if standard_scaling_columns:
-        user_input_scaled[standard_scaling_columns] = standard_scaler.transform(user_input_scaled[standard_scaling_columns])
-    
-    return user_input_scaled
+def encode(df):
+    for column in df.columns:
+        if df[column] = df["NObeyesdad"]:
+            df["NObeyesdad"] = target_encoder.fit_transform(df["NObeyesdad"])
+        else:
+            df[column] = label_encoder.fit_transform(df[column])
+    return df
+
+def scaling(df):
+    if df[column] = df["Height"]:
+        df["Height"] = standard_scaler.transform(df)
+    else:
+        df[column] = robust_scaler.transform(df)
+    return df
+
+def predict_model(model, user_input):
+    prediction = model.predict(user_input)
+    return prediction[0]
 
 #main
 def main():
@@ -87,7 +79,6 @@ def main():
     CH2O = st.slider('CH2O', min_value = 1, max_value = 3, value = 2)
     FAF = st.slider('FAF', min_value = 0, max_value = 3, value = 1)
     TUE = st.slider('TUE', min_value = 0, max_value = 2, value = 1)
-
     #categorical
     Gender = st.selectbox('Gender', ('Male', 'Female'))
     family_history_with_overweight = st.selectbox('Family history with overweight', ('yes', 'no'))
