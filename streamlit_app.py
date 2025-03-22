@@ -151,7 +151,7 @@ def main():
 
     #preprocess input data
     # df = target_encode(output_df, target_encoder)
-    df = feature_encode(df, label_encoder)
+    df = feature_encode(df, label_encoder, column)
     
     
     df = standard_scaling(df, standard_scaler, "Height")
