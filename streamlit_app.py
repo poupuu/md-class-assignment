@@ -135,23 +135,30 @@ def main():
     # for col, options in categorical_cols.items():
     #     user_input[col] = st.selectbox(col, options)
 
-    df = encode(input_df)
-    df = scaling(input_df)
-    prediction = predict_model(model, input_df)
+    #preprocess input data
+    df = encode(input_df, target_encoder, label_encoders)
+    df = scaling(df, standard_scaler, robust_scaler)
+    prediction = predict_model(model, df)
     
     # #preprocess user input
     # user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
     
     #predict probabilities
+    pred = model.predict_proba(df)
+    df_pred = pd.DataFrame(prediction_proba)
+    df_pred.columns = ['Insufficient Weight', 'Normal Weight', 'Overweight Level I', 'Overweight Level II', 'Obesity Type I', 'Obesity Type II', 'Obesity Type III']
+    df_pred.rename(columns={0: 'Insufficient Weight', 
+                            1:'Normal Weight', 
+                            2: 'Overweight Level I', 
+                            3: 'Overweight Level II', 
+                            4:'Obesity Type I', 
+                            5:'Obesity Type II', 
+                            6: 'Obesity Type III'})
+
+
     st.write("Obesity Prediction")
-    probabilities = model.predict_proba(user_input_scaled)
-    prob_df = pd.DataFrame(probabilities, columns=target_mapping.keys()).T
-    prob_df.columns = ["Probability"]
-    st.table(prob_df)
-    
-    #prediction
-    prediction = model.predict(user_input_scaled)[0]
-    st.write(f"The predicted output is: ",prediction)
+    df_pred
+    st.write("The predicted output is: ", prediction)
 
 if __name__ == "__main__":
     main()
