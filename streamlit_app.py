@@ -91,23 +91,10 @@ def main():
     CALC = st.selectbox('CALC', ('Sometimes', 'no', 'Frequently', 'Always'))
     MTRANS = st.selectbox('MTRANS', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
     
-     
-    st.subheader("Target Variable (y)")
-    st.write(output_df.head())
-    
-    # 2. Data Visualization
-    st.header("Data Visualization")
-    fig, ax = plt.subplots()
-    scatter = ax.scatter(input_df["Height"], input_df["Weight"], c=output_df, cmap="viridis")
-    ax.set_xlabel("Height")
-    ax.set_ylabel("Weight")
-    ax.set_title("Height vs Weight by Obesity Level")
-    plt.colorbar(scatter, label="Obesity Level")
-    st.pyplot(fig)
-    
-    # 3. User Input
-    st.header("User Input")
-    user_input = {}
+  
+    #input data show
+    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
+    user_input
     
     # Numerical Inputs (using st.slider)
     numerical_cols = {
