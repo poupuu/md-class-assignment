@@ -32,14 +32,17 @@ def input_user_to_df(input_df):
 #             df[column] = label_encoder[column].fit_transform(df[column])
 #     return df
 
-def target_encode(df):
-    for column in df.columns:
-        df[column] = target_encoder.fit_transform(df[column])
-    return df
+###
+# def target_encode(df):
+#     for column in df.columns:
+#         df[column] = target_encoder.fit_transform(df[column])
+#     return df
+###
 
 def feature_encode(df):
     for column in df.columns:
-        df[column] = label_encoder.fit_transform(df[column])
+        if df[column].dtype == "object":
+            df[column] = label_encoder.fit_transform(df[column])
     return df
 
 # def scaling(df):
@@ -61,13 +64,13 @@ def robust_scaling(df):
             df[column] = robust_scaler.transform(df[[column]])
         return df
     
-def scaling(df, standard_scaler, robust_scaler):
-    for column in df.columns:
-        if column == "Height": 
-            df[column] = standard_scaler.fit_transform(df[[column]])
-        elif df[column].dtype in [np.float64, np.int64]: 
-            df[column] = robust_scaler.fit_transform(df[[column]])
-    return df
+# def scaling(df, standard_scaler, robust_scaler):
+#     for column in df.columns:
+#         if column == "Height": 
+#             df[column] = standard_scaler.fit_transform(df[[column]])
+#         elif df[column].dtype in [np.float64, np.int64]: 
+#             df[column] = robust_scaler.fit_transform(df[[column]])
+#     return df
 
 def predict_model(model, user_input):
     prediction = model.predict(user_input)
@@ -158,37 +161,38 @@ def main():
     #preprocess input data
     # df = target_encode(output_df, target_encoder)
     df = feature_encode(df)
+    df
     
     
-    df = standard_scaling(df, standard_scaler, "Height")
-    df = robust_scaling(df, robust_scaler)
-    prediction = predict_model(model, df)
+#     df = standard_scaling(df, standard_scaler, "Height")
+#     df = robust_scaling(df, robust_scaler)
+#     prediction = predict_model(model, df)
     
-    #preprocess input data
-    # df = encode(df, target_encoder, label_encoder)
-    # df = scaling(df, standard_scaler, robust_scaler)
-    # prediction = predict_model(model, df)
+#     #preprocess input data
+#     # df = encode(df, target_encoder, label_encoder)
+#     # df = scaling(df, standard_scaler, robust_scaler)
+#     # prediction = predict_model(model, df)
     
-    # #preprocess user input
-    # user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
+#     # #preprocess user input
+#     # user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
     
-    #predict probabilities
-    pred = model.predict_proba(df)
-    df_pred = pd.DataFrame(prediction_proba)
-    df_pred.columns = ['Insufficient Weight', 'Normal Weight', 'Overweight Level I', 'Overweight Level II', 'Obesity Type I', 'Obesity Type II', 'Obesity Type III']
-    df_pred.rename(columns={0: 'Insufficient Weight', 
-                            1:'Normal Weight', 
-                            2: 'Overweight Level I', 
-                            3: 'Overweight Level II', 
-                            4:'Obesity Type I', 
-                            5:'Obesity Type II', 
-                            6: 'Obesity Type III'})
+#     #predict probabilities
+#     pred = model.predict_proba(df)
+#     df_pred = pd.DataFrame(prediction_proba)
+#     df_pred.columns = ['Insufficient Weight', 'Normal Weight', 'Overweight Level I', 'Overweight Level II', 'Obesity Type I', 'Obesity Type II', 'Obesity Type III']
+#     df_pred.rename(columns={0: 'Insufficient Weight', 
+#                             1:'Normal Weight', 
+#                             2: 'Overweight Level I', 
+#                             3: 'Overweight Level II', 
+#                             4:'Obesity Type I', 
+#                             5:'Obesity Type II', 
+#                             6: 'Obesity Type III'})
 
 
-    st.write("Obesity Prediction")
-    df_pred
-    st.write("The predicted output is: ", prediction)
+#     st.write("Obesity Prediction")
+#     df_pred
+#     st.write("The predicted output is: ", prediction)
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
