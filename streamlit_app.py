@@ -82,7 +82,6 @@ def main():
 
     # User Input Section
     st.header("Enter Your Information")
-    user_input = {}
      #input data
     #numerical
     Age = st.slider('Age', min_value = 14, max_value = 61, value = 24)
