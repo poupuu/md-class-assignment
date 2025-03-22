@@ -160,7 +160,7 @@ def main():
 
     #preprocess input data
     # df = target_encode(output_df, target_encoder)
-    df = feature_encode(df)
+    # df = feature_encode(df)
     df
     
     
