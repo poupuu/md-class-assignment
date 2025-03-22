@@ -48,9 +48,6 @@ def main():
     st.title("Machine Learning App")
     st.info("This app will predict your obesity level!")
     
-    #load
-    standard_scaler, robust_scaler, model, target_mapping, label_encoders = load_artifacts()
-    
     #raw data
     with st.expander("**Data**"):
         st.write("This is raw data")
