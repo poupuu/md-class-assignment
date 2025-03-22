@@ -96,7 +96,7 @@ def main():
     #input by user
     st.write("Data input by User")
     user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-    input_df = input_to_df(user_input)
+    df = input_to_df(user_input)
     st.table(user_input_df)
     
     # Numerical Inputs (using st.slider)
