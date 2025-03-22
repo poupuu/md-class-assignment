@@ -117,8 +117,8 @@ def main():
         "TUE": (0, 2),
     }
     
-    for col, (min_val, max_val) in numerical_cols.items():
-        user_input[col] = st.slider(col, min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
+    # for col, (min_val, max_val) in numerical_cols.items():
+    #     user_input[col] = st.slider(col, min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
     
     # Categorical Inputs (using st.selectbox)
     categorical_cols = {
@@ -132,8 +132,8 @@ def main():
         "MTRANS": ["Public_Transportation", "Motorbike", "Walking", "Bike", "Car"],
     }
     
-    for col, options in categorical_cols.items():
-        user_input[col] = st.selectbox(col, options)
+    # for col, options in categorical_cols.items():
+    #     user_input[col] = st.selectbox(col, options)
     
     #preprocess user input
     user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
