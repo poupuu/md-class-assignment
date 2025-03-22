@@ -32,11 +32,13 @@ def input_user_to_df(input_df):
 #             df[column] = label_encoder[column].fit_transform(df[column])
 #     return df
 
-def target_encode(df, target_encoder):
-    return df[column] = target_encoder.fit_transform(df[column])
+def target_encode(df, target_encoder, column = "NObeyesdad"):
+    df[column] = target_encoder.fit_transform(df[column])
+    return df
 
-def feature_encode(df, label_encoder):
-    return df[column] = label_encoder.fit_transform(df[column])
+def feature_encode(df, label_encoder, column):
+    df[column] = label_encoder.fit_transform(df[column])
+    return df
 
 # def scaling(df):
 #     if df[column] == df["Height"]:
