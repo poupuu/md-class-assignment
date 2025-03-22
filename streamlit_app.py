@@ -1,170 +1,145 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import pickle
-import matplotlib.pyplot as plt
-import joblib
+#EDA and Preprocessing
+eda_preprocessor = EDAandPreprocessing(input_df, output_df)
 
-# Load saved artifacts
-target_encoder = joblib.load("encoded_target_variable.pkl")
-label_encoders = joblib.load("label_encoders.pkl")
-standard_scaler = joblib.load("standard_scaler.pkl")
-robust_scaler = joblib.load("robust_scaler.pkl")
-model = joblib.load("fine_tuned_model.pkl")
+#check data types
+print("\n--- Checking Data Types ---")
+for column in input_df.columns:
+    dtype = eda_preprocessor.checkDataType(column)
+    print(f"Column: {column}, Data Type: {dtype}")
 
-# Convert user input to DataFrame
-def input_user_to_df(user_input):
-    columns = [
-        'Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 
-        'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 
-        'CALC', 'MTRANS'
-    ]
-    df = pd.DataFrame([user_input], columns=columns)
-    return df
+#convert columns to numeric (if needed)
+print("\n--- Converting Columns to Numeric ---")
+numeric_columns = ["Age", "Height", "Weight", "FCVC", "NCP", "CH2O", "FAF", "TUE"] #configurable
+for column in numeric_columns:
+    if column in input_df.columns:
+        eda_preprocessor.dataConvertToNumeric(column)
+        print(f"Converted '{column}' to numeric type.")
 
-# Encode categorical features
-def feature_encode(df, label_encoders):
-    for column in df.columns:
-        if column in label_encoders:  # Check if the column has a corresponding encoder
-            try:
-                df[column] = label_encoders[column].transform(df[column])
-            except Exception as e:
-                st.error(f"Error encoding column '{column}': {e}")
-                raise
-    return df
+#convert columns to categorical (if needed)
+print("\n--- Converting Columns to Categorical ---")
+categorical_columns = ["Gender", "family_history_with_overweight", "FAVC", "CAEC", "SMOKE", "SCC", "CALC", "MTRANS"] #configurable
+for column in categorical_columns:
+    if column in input_df.columns:
+        eda_preprocessor.dataConvertToCategorical(column)
+        print(f"Converted '{column}' to categorical type.")
 
-# Apply standard scaling to "Height"
-def standard_scaling(df, standard_scaler):
-    df["Height"] = standard_scaler.transform(df[["Height"]])
-    return df
+#check for missing values
+print("\n--- Checking for Missing Values ---")
+missing_values = {}
+for column in input_df.columns:
+    missing_count = eda_preprocessor.checkMissingValue(column)
+    missing_values[column] = missing_count
+    print(f"Column: {column}, Missing Values: {missing_count}")
 
-# Apply robust scaling to numerical columns (except "Height")
-def robust_scaling(df, robust_scaler):
-    numerical_columns = ["Age", "Weight", "FCVC", "NCP", "CH2O", "FAF", "TUE"]
-    for column in numerical_columns:
-        df[column] = robust_scaler.transform(df[[column]])
-    return df
+#handle missing values
+print("\n--- Handling Missing Values ---")
+for column, count in missing_values.items():
+    if count > 0:
+        eda_preprocessor.handleMissingValue(column)
+        print(f"Handled missing values in '{column}'.")
 
-# Predict probabilities and final class
-def predict_model(model, user_input_scaled):
-    probabilities = model.predict_proba(user_input_scaled)
-    prediction = model.predict(user_input_scaled)[0]
-    return probabilities, prediction
+#check distribution of columns
+print("\n--- Checking Distribution of Columns ---")
+for column in input_df.columns:
+    print(f"\nDistribution of Column: {column}")
+    eda_preprocessor.checkDistribution(column)
 
-# Main Streamlit App
-def main():
-    st.title("Obesity Level Prediction App")
-    st.info("This app predicts your obesity level based on your inputs!")
+#ordinal encoding for target variable (manual input)
+print("\n--- Ordinal Encoding for Target Variable ---")
+target_categories = ["Insufficient_Weight", "Normal_Weight", "Overweight_Level_I", 
+                     "Overweight_Level_II", "Obesity_Type_I", "Obesity_Type_II", "Obesity_Type_III"] #configurable
 
-    # Raw Data Section
-    with st.expander("**Raw Data**"):
-        st.write("This is the raw dataset used for training the model.")
-        df = pd.read_csv("ObesityDataSet_raw_and_data_sinthetic.csv")
-        st.write(df.head())
+#manual ordinal mapping
+ordinal_mapping = {
+    "Insufficient_Weight": 0,
+    "Normal_Weight": 1,
+    "Overweight_Level_I": 2,
+    "Overweight_Level_II": 3,
+    "Obesity_Type_I": 4,
+    "Obesity_Type_II": 5,
+    "Obesity_Type_III": 6
+} #configurable
 
-        st.write("**Features (X)**")
-        input_df = df.drop("NObeyesdad", axis=1)
-        st.write(input_df.head())
+#apply ordinal encoding
+output_df = output_df.map(ordinal_mapping)
 
-        st.write("**Target Variable (y)**")
-        output_df = df["NObeyesdad"]
-        st.write(output_df.head())
+#save encoded target variable
+FileHandler.saveEncoder(output_df, "encoded_target_variable.pkl")
+print("Saved encoded target variable.")
 
-    # Data Visualization Section
-    with st.expander("**Data Visualization**"):
-        fig, ax = plt.subplots()
-        scatter = ax.scatter(df["Height"], df["Weight"], c=output_df.astype('category').cat.codes, cmap="viridis")
-        ax.set_xlabel("Height")
-        ax.set_ylabel("Weight")
-        ax.set_title("Height vs Weight by Obesity Level")
-        plt.colorbar(scatter, label="Obesity Level")
-        st.pyplot(fig)
+#print after encode target variable
+print("Ordinal Encoded Target Variable:")
+print(output_df.value_counts().sort_index())
 
-    # User Input Section
-    st.header("Enter Your Information")
-     #input data
-    #numerical
-    Age = st.slider('Age', min_value = 14, max_value = 61, value = 24)
-    Height = st.slider('Height', min_value = 1.45, max_value = 1.98, value = 1.7)
-    Weight = st.slider('Weight', min_value = 39, max_value = 173, value = 86)
-    FCVC = st.slider('FCVC', min_value = 1, max_value = 3, value = 2)
-    NCP = st.slider('NCP', min_value = 1, max_value = 4, value = 3)
-    CH2O = st.slider('CH2O', min_value = 1, max_value = 3, value = 2)
-    FAF = st.slider('FAF', min_value = 0, max_value = 3, value = 1)
-    TUE = st.slider('TUE', min_value = 0, max_value = 2, value = 1)
-    #categorical
-    Gender = st.selectbox('Gender', ('Male', 'Female'))
-    family_history_with_overweight = st.selectbox('Family history with overweight', ('yes', 'no'))
-    FAVC = st.selectbox('FAVC', ('yes', 'no'))
-    CAEC = st.selectbox('CAEC', ('Sometimes', 'Frequently', 'Always', 'no'))
-    SMOKE = st.selectbox('SMOKE', ('yes', 'no'))
-    SCC = st.selectbox('SCC', ('yes', 'no'))
-    CALC = st.selectbox('CALC', ('Sometimes', 'no', 'Frequently', 'Always'))
-    MTRANS = st.selectbox('MTRANS', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
+#label encoding for categorical features
+print("\n--- Label Encoding for Categorical Features ---")
 
-    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-    # Numerical Inputs (using st.slider)
-    numerical_cols = {
-        "Age": (14, 61),
-        "Height": (1.45, 1.98),
-        "Weight": (39, 173),
-        "FCVC": (1, 3),
-        "NCP": (1, 4),
-        "CH2O": (1, 3),
-        "FAF": (0, 3),
-        "TUE": (0, 2),
-    }
+#identify categorical columns in the input data
+categorical_columns = input_df.select_dtypes(include=['object', 'category']).columns.tolist()
+label_encoders = {}
+for column in categorical_columns:
+    le = LabelEncoder()
+    input_df[column] = le.fit_transform(input_df[column])
+    label_encoders[column] = le  
+    print(f"Applied Label Encoding to Column: {column}")
 
-    # for col, (min_val, max_val) in numerical_cols.items():
-    #     user_input[col] = st.slider(col, min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
+#save label encoder features
+FileHandler.saveEncoder(label_encoders, "label_encoders.pkl")
+print("Saved label encoders.")
 
-    # Categorical Inputs (using st.selectbox)
-    categorical_cols = {
-        "Gender": ["Male", "Female"],
-        "family_history_with_overweight": ["yes", "no"],
-        "FAVC": ["yes", "no"],
-        "CAEC": ["Sometimes", "Frequently", "Always", "no"],
-        "SMOKE": ["yes", "no"],
-        "SCC": ["yes", "no"],
-        "CALC": ["Sometimes", "no", "Frequently", "Always"],
-        "MTRANS": ["Public_Transportation", "Automobile", "Walking", "Motorbike", "Bike"],
-    }
+#print after encode features
+print("\nLabel Encoded Input Data:")
+print(input_df.head())
 
-    # for col, options in categorical_cols.items():
-    #     user_input[col] = st.selectbox(col, options)
+#splitting features and target (not really needed, just us input_df and output_df)
+# print("\n--- Creating Input and Output Data ---")
+# input_df, output_df = data_handler.create_input_output("NObeyesdad")
 
-    # Display User-Inputted Data
-    st.header("Your Input Data")
-    user_input_df = input_user_to_df(user_input)
-    st.table(user_input_df)
+# # Print shapes of input_df and output_df
+# print(f"Shape of Features (input_df): {input_df.shape}")
+# print(f"Shape of Target (output_df): {output_df.shape}")
 
-    # Preprocess User Input
-    # Step 1: Encode categorical features
-    user_input_encoded = feature_encode(user_input_df, label_encoders)
+# # Display the first few rows of input_df and output_df
+# print("\nFirst Few Rows of Features (input_df):")
+# print(input_df.head())
 
-    # Step 2: Scale numerical features
-    user_input_scaled = standard_scaling(user_input_encoded, standard_scaler)
-    user_input_scaled = robust_scaling(user_input_scaled, robust_scaler)
+# print("\nFirst Few Rows of Target (output_df):")
+# print(output_df.head())
 
-    # Predict Probabilities and Final Class
-    probabilities, prediction = predict_model(model, user_input_scaled)
+#feature scaling (standard scaling and robust scaling)
+print("\n--- Feature Scaling ---")
+standard_scaling_columns = ["Height"]  #configurable
+robust_scaling_columns = ["Age", "Weight", "FCVC", "NCP", "CH2O", "FAF", "TUE"]  #configurable
 
-    # Display Prediction Results
-    st.header("Prediction Results")
-    
-    # Probabilities Table
-    prob_df = pd.DataFrame(probabilities, columns=[
-        "Insufficient_Weight", "Normal_Weight", "Overweight_Level_I", 
-        "Overweight_Level_II", "Obesity_Type_I", "Obesity_Type_II", 
-        "Obesity_Type_III"
-    ]).T
-    prob_df.columns = ["Probability"]
-    st.subheader("Class Probabilities")
-    st.table(prob_df)
+#standard
+if standard_scaling_columns:
+    print("Applying Standard Scaling to columns:", standard_scaling_columns)
+    eda_preprocessor.standardScaling(standard_scaling_columns)
 
-    # Final Prediction
-    st.subheader("Final Prediction")
-    st.success(f"The predicted obesity level is: **{prediction}**")
+#robust
+if robust_scaling_columns:
+    print("Applying Robust Scaling to columns:", robust_scaling_columns)
+    eda_preprocessor.robustScaling(robust_scaling_columns)
 
-if __name__ == "__main__":
-    main()
+standard_scaler = StandardScaler()
+robust_scaler = RobustScaler()
+
+#fit standard scaler
+if standard_scaling_columns:
+    print("Applying Standard Scaling to columns:", standard_scaling_columns)
+    eda_preprocessor.fitScaler(standard_scaler, standard_scaling_columns)
+
+#fit robust scaler
+if robust_scaling_columns:
+    print("Applying Robust Scaling to columns:", robust_scaling_columns)
+    eda_preprocessor.fitScaler(robust_scaler, robust_scaling_columns)
+
+#save scalers
+FileHandler.saveScaler(standard_scaler, "standard_scaler.pkl")
+FileHandler.saveScaler(robust_scaler, "robust_scaler.pkl")
+print("Saved standard and robust scalers.")
+
+#final check
+print("\nFirst Few Rows of Scaled Features (X):")
+print(input_df.head())
+print(output_df.head())
