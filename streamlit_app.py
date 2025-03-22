@@ -101,7 +101,8 @@ def main():
     SCC = st.selectbox('SCC', ('yes', 'no'))
     CALC = st.selectbox('CALC', ('Sometimes', 'no', 'Frequently', 'Always'))
     MTRANS = st.selectbox('MTRANS', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
-    
+
+    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
     # Numerical Inputs (using st.slider)
     numerical_cols = {
         "Age": (14, 61),
