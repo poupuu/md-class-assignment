@@ -67,9 +67,9 @@ def main():
         output_df
 
     #data visualization
-    with st.expander("**Data Visualization**"):
-        st.scatter_chart(data=df, x = "Height", y = "weight", color="NObeyesdad")
-    
+    with st.expander('**Data Visualization**'):
+        st.scatter_chart(data=df, x = 'Height', y = 'Weight', color='NObeyesdad')
+      
     st.subheader("Target Variable (y)")
     st.write(output_df.head())
     
