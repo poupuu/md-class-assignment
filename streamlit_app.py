@@ -93,8 +93,9 @@ def main():
     
   
     #input by user
-    st.header("Data input by User")
-    user_input_df = pd.DataFrame([user_input])
+    st.write("Data input by User")
+    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
+    input_df = input_to_df(user_input)
     st.table(user_input_df)
     
     # Numerical Inputs (using st.slider)
@@ -126,11 +127,6 @@ def main():
     
     for col, options in categorical_cols.items():
         user_input[col] = st.selectbox(col, options)
-    
-    # 5. Display User-Inputted Data
-    st.header("Data Input by User")
-    user_input_df = pd.DataFrame([user_input])
-    st.table(user_input_df)
     
     # 6. Preprocess User Input
     user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
