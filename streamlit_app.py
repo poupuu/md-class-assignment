@@ -69,7 +69,29 @@ def main():
     #data visualization
     with st.expander('**Data Visualization**'):
         st.scatter_chart(data=df, x = 'Height', y = 'Weight', color='NObeyesdad')
-      
+
+    #input data
+    #numerical
+    Age = st.slider('Age', min_value = 14, max_value = 61, value = 24)
+    Height = st.slider('Height', min_value = 1.45, max_value = 1.98, value = 1.7)
+    Weight = st.slider('Weight', min_value = 39, max_value = 173, value = 86)
+    FCVC = st.slider('FCVC', min_value = 1, max_value = 3, value = 2)
+    NCP = st.slider('NCP', min_value = 1, max_value = 4, value = 3)
+    CH2O = st.slider('CH2O', min_value = 1, max_value = 3, value = 2)
+    FAF = st.slider('FAF', min_value = 0, max_value = 3, value = 1)
+    TUE = st.slider('TUE', min_value = 0, max_value = 2, value = 1)
+
+    #categorical
+    Gender = st.selectbox('Gender', ('Male', 'Female'))
+    family_history_with_overweight = st.selectbox('Family history with overweight', ('yes', 'no'))
+    FAVC = st.selectbox('FAVC', ('yes', 'no'))
+    CAEC = st.selectbox('CAEC', ('Sometimes', 'Frequently', 'Always', 'no'))
+    SMOKE = st.selectbox('SMOKE', ('yes', 'no'))
+    SCC = st.selectbox('SCC', ('yes', 'no'))
+    CALC = st.selectbox('CALC', ('Sometimes', 'no', 'Frequently', 'Always'))
+    MTRANS = st.selectbox('MTRANS', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
+    
+     
     st.subheader("Target Variable (y)")
     st.write(output_df.head())
     
