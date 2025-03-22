@@ -29,7 +29,7 @@ def encode(df, target_encoder, label_encoders):
         if column == "NObeyesdad":
             df[column] = target_encoder.fit_transform(df[column])
         else: 
-            df[column] = label_encoders[column].fit_transform(df[column])
+            df[column] = label_encoder[column].fit_transform(df[column])
     return df
 
 
@@ -136,7 +136,7 @@ def main():
     #     user_input[col] = st.selectbox(col, options)
 
     #preprocess input data
-    df = encode(input_df, target_encoder, label_encoders)
+    df = encode(input_df, target_encoder, label_encoder)
     df = scaling(df, standard_scaler, robust_scaler)
     prediction = predict_model(model, df)
     
