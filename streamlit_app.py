@@ -39,11 +39,11 @@ def input_user_to_df(input):
 #     return df
 ###
 
-def feature_encode(df):
-    for column in df.columns:
-        if df[column].dtype == "object":
-            df[column] = label_encoder.fit_transform(df[column])
-    return df
+def feature_encode(temp_df):
+    for column in temp_df.columns:
+        if temp_df[column].dtype == "object":
+            temp_df[column] = label_encoder.fit_transform(temp_df[column])
+    return temp_df
 
 # def scaling(df):
 #     if df[column] == df["Height"]:
@@ -127,7 +127,6 @@ def main():
     temp_df
 
     temp_df = feature_encode(temp_df)
-    temp_df
     
     # #numerical inputs
     # numerical_cols = {
