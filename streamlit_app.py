@@ -53,13 +53,13 @@ def standard_scaling(df):
     for column in df.columns:
         if df[column] == df["Height"]:
             df[column] = standard_scaler.transform(df[[column]])
-     return df
+        return df
 
 def robust_scaling(df):
     for column in df.columns:
         if df[columns] != df["Height"]:
             df[column] = robust_scaler.transform(df[[column]])
-    return df
+        return df
     
 def scaling(df, standard_scaler, robust_scaler):
     for column in df.columns:
