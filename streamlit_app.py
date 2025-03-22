@@ -130,8 +130,8 @@ def main():
         "MTRANS": ["Public_Transportation", "Automobile", "Walking", "Motorbike", "Bike"],
     }
 
-    for col, options in categorical_cols.items():
-        user_input[col] = st.selectbox(col, options)
+    # for col, options in categorical_cols.items():
+    #     user_input[col] = st.selectbox(col, options)
 
     # Display User-Inputted Data
     st.header("Your Input Data")
