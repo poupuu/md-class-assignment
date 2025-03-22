@@ -36,7 +36,7 @@ def target_encode(df, target_encoder, column = "NObeyesdad"):
     df[column] = target_encoder.fit_transform(df[column])
     return df
 
-def feature_encode(df, label_encoder, column):
+def feature_encode(df, label_encoder):
     df[column] = label_encoder.fit_transform(df[column])
     return df
 
@@ -151,7 +151,7 @@ def main():
 
     #preprocess input data
     # df = target_encode(output_df, target_encoder)
-    df = feature_encode(df, label_encoder, df[column])
+    df = feature_encode(df, label_encoder)
     
     
     df = standard_scaling(df, standard_scaler, "Height")
