@@ -4,20 +4,20 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 
-# Load saved artifacts
+#load .pkl
 def load_artifacts():
-    # Load scalers
+    #scalers
     with open("standard_scaler.pkl", "rb") as f:
         standard_scaler = pickle.load(f)
     
     with open("robust_scaler.pkl", "rb") as f:
         robust_scaler = pickle.load(f)
     
-    # Load fine-tuned model
+    #model
     with open("fine_tuned_model.pkl", "rb") as f:
         model = pickle.load(f)
     
-    # Load encoders
+    #encoders
     with open("encoded_target_variable.pkl", "rb") as f:
         target_mapping = pickle.load(f)
     
@@ -26,33 +26,33 @@ def load_artifacts():
     
     return standard_scaler, robust_scaler, model, target_mapping, label_encoders
 
-# Preprocess user input
+#preprocess
 def preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler):
-    # Convert categorical inputs using label encoders
+    #convert
     for col, le in label_encoders.items():
         if col in user_input:
             user_input[col] = le.transform([user_input[col]])[0]
     
-    # Scale numerical inputs
+    #scaling
     scaled_features = robust_scaler.transform(pd.DataFrame(user_input, index=[0]))
     user_input_scaled = pd.DataFrame(scaled_features, columns=user_input.keys())
     
-    # Apply standard scaling to specific columns if needed
+    #standard scaling
     standard_scaling_columns = ["Height"]
     if standard_scaling_columns:
         user_input_scaled[standard_scaling_columns] = standard_scaler.transform(user_input_scaled[standard_scaling_columns])
     
     return user_input_scaled
 
-# Main Streamlit App
+#main
 def main():
     st.title("Machine Learning App")
     st.info("This app will predict your obesity level!")
     
-    # Load artifacts
+    #load
     standard_scaler, robust_scaler, model, target_mapping, label_encoders = load_artifacts()
     
-    # 1. Show Raw Data
+    #raw data
     with st.expander("**Data**"):
         st.write("This is raw data")
         df = pd.read_csv("ObesityDataSet_raw_and_data_sinthetic.csv")
@@ -66,8 +66,9 @@ def main():
         output_df = df["NObeyesdad"]
         output_df
 
-    
-    st.write(input_df.head())
+    #data visualization
+    with st.expander("**Data Visualization**")
+        st.scatter_chart(data=df, x = "Height", y = "weight", color="NObeyesdad")
     
     st.subheader("Target Variable (y)")
     st.write(output_df.head())
