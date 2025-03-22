@@ -24,19 +24,28 @@ def input_user_to_df(input_df):
     return df
 
 #preprocess
-def encode(df):
+def encode(df, target_encoder, label_encoders):
     for column in df.columns:
-        if df[column] == df["NObeyesdad"]:
-            df["NObeyesdad"] = target_encoder.fit_transform(df["NObeyesdad"])
-        else:
-            df[column] = label_encoder.fit_transform(df[column])
+        if column == "NObeyesdad":
+            df[column] = target_encoder.fit_transform(df[column])
+        else: 
+            df[column] = label_encoders[column].fit_transform(df[column])
     return df
+
 
 def scaling(df):
     if df[column] == df["Height"]:
         df["Height"] = standard_scaler.transform(df)
     else:
         df[column] = robust_scaler.transform(df)
+    return df
+    
+def scaling(df, standard_scaler, robust_scaler):
+    for column in df.columns:
+        if column == "Height": 
+            df[column] = standard_scaler.fit_transform(df[[column]])
+        elif df[column].dtype in [np.float64, np.int64]: 
+            df[column] = robust_scaler.fit_transform(df[[column]])
     return df
 
 def predict_model(model, user_input):
