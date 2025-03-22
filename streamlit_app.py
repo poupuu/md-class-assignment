@@ -115,8 +115,8 @@ def main():
         "TUE": (0, 2),
     }
 
-    for col, (min_val, max_val) in numerical_cols.items():
-        user_input[col] = st.slider(col, min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
+    # for col, (min_val, max_val) in numerical_cols.items():
+    #     user_input[col] = st.slider(col, min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
 
     # Categorical Inputs (using st.selectbox)
     categorical_cols = {
