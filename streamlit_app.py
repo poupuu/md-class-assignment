@@ -49,12 +49,16 @@ def feature_encode(df):
 #         df[column] = robust_scaler.transform(df)
 #     return df
 
-def standard_scaling(df, standard_scaler, column="Height"):
-    df[column] = standard_scaler.transform(df[[column]])
-    return df
+def standard_scaling(df):
+    for column in df.columns:
+        if df[column] == df["Height"]:
+            df[column] = standard_scaler.transform(df[[column]])
+     return df
 
-def robust_scaling(df, robust_scaler, column):
-    df[column] = robust_scaler.transform(df[[column]])
+def robust_scaling(df):
+    for column in df.columns:
+        if df[columns] != df["Height"]:
+            df[column] = robust_scaler.transform(df[[column]])
     return df
     
 def scaling(df, standard_scaler, robust_scaler):
@@ -153,7 +157,7 @@ def main():
 
     #preprocess input data
     # df = target_encode(output_df, target_encoder)
-    df = feature_encode(df, label_encoder)
+    df = feature_encode(df)
     
     
     df = standard_scaling(df, standard_scaler, "Height")
