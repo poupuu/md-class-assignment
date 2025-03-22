@@ -59,9 +59,11 @@ def main():
         df
 
         st.write("**X**")
+        input_df = df.drop("NObeyesdad", axis=1)
         input_df
+        
         st.write("y")
-        output_df
+        output_df = df["NObeyesdad"]
 
     
     st.write(input_df.head())
