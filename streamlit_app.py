@@ -23,21 +23,34 @@ def input_user_to_df(input_df):
     df = pd.DataFrame(data, columns = ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS'])
     return df
 
-#preprocess
-def encode(df, target_encoder, label_encoders):
-    for column in df.columns:
-        if column == "NObeyesdad":
-            df[column] = target_encoder.fit_transform(df[column])
-        else: 
-            df[column] = label_encoder[column].fit_transform(df[column])
+# #preprocess
+# def encode(df, target_encoder, label_encoders):
+#     for column in df.columns:
+#         if column == "NObeyesdad":
+#             df[column] = target_encoder.fit_transform(df[column])
+#         else: 
+#             df[column] = label_encoder[column].fit_transform(df[column])
+#     return df
+
+def target_encode(df, target_encoder):
+    return df[column] = target_encoder.fit_transform(df[column])
+
+def feature_encode(df, label_encoder):
+    return df[column] = label_encoder.fit_transform(df[column])
+
+# def scaling(df):
+#     if df[column] == df["Height"]:
+#         df["Height"] = standard_scaler.transform(df)
+#     else:
+#         df[column] = robust_scaler.transform(df)
+#     return df
+
+def standard_scaling(df, standard_scaler, column="Height"):
+    df[column] = standard_scaler.transform(df[[column]])
     return df
 
-
-def scaling(df):
-    if df[column] == df["Height"]:
-        df["Height"] = standard_scaler.transform(df)
-    else:
-        df[column] = robust_scaler.transform(df)
+def robust_scaling(df, robust_scaler, column):
+    df[column] = robust_scaler.transform(df[[column]])
     return df
     
 def scaling(df, standard_scaler, robust_scaler):
@@ -135,9 +148,18 @@ def main():
     #     user_input[col] = st.selectbox(col, options)
 
     #preprocess input data
-    df = encode(df, target_encoder, label_encoder)
-    df = scaling(df, standard_scaler, robust_scaler)
+    # df = target_encode(output_df, target_encoder)
+    df = feature_encode(df, label_encoder)
+    
+    
+    df = standard_scaling(df, standard_scaler, "Height")
+    df = robust_scaling(df, robust_scaler)
     prediction = predict_model(model, df)
+    
+    #preprocess input data
+    # df = encode(df, target_encoder, label_encoder)
+    # df = scaling(df, standard_scaler, robust_scaler)
+    # prediction = predict_model(model, df)
     
     # #preprocess user input
     # user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
