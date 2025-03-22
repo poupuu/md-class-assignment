@@ -64,6 +64,7 @@ def main():
         
         st.write("y")
         output_df = df["NObeyesdad"]
+        output_df
 
     
     st.write(input_df.head())
