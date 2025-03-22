@@ -92,9 +92,10 @@ def main():
     MTRANS = st.selectbox('MTRANS', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
     
   
-    #input data show
-    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-    user_input
+    #input by user
+    st.header("Data input by User")
+    user_input_df = pd.DataFrame([user_input])
+    st.table(user_input_df)
     
     # Numerical Inputs (using st.slider)
     numerical_cols = {
