@@ -27,6 +27,12 @@ def load_artifacts():
     
     return standard_scaler, robust_scaler, model, target_mapping, label_encoders
 
+#load user input
+def load_input(user_input):
+    data = [user_input]
+    df = pd.DataFrame(data, columns = ['Gender', 'Age', 'Height', 'Weight', 'family_history_with_overweight', 'FAVC', 'FCVC', 'NCP', 'CAEC', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE', 'CALC', 'MTRANS'])
+    return df
+
 #preprocess
 def preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler):
     #convert
@@ -94,7 +100,7 @@ def main():
     
     # Input Data for Program
     user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-    df = input_to_df(user_input)
+    df = load_input(user_input)
 
     st.write('Data input by user')
     df
