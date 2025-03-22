@@ -101,7 +101,9 @@ def main():
 
     st.write('Data input by user')
     df
-    
+
+    input_df
+    output_df
     # #numerical inputs
     # numerical_cols = {
     #     "Age": (14, 61),
