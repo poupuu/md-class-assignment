@@ -101,9 +101,6 @@ def main():
 
     st.write('Data input by user')
     df
-
-    input_df
-    output_df
     # #numerical inputs
     # numerical_cols = {
     #     "Age": (14, 61),
@@ -138,7 +135,7 @@ def main():
     #     user_input[col] = st.selectbox(col, options)
 
     #preprocess input data
-    df = encode(input_df, target_encoder, label_encoder)
+    df = encode(df, target_encoder, label_encoder)
     df = scaling(df, standard_scaler, robust_scaler)
     prediction = predict_model(model, df)
     
