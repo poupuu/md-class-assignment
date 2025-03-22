@@ -193,6 +193,6 @@ def main():
 #     df_pred
 #     st.write("The predicted output is: ", prediction)
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
 
