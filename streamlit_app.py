@@ -47,14 +47,23 @@ def preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
 # Main Streamlit App
 def main():
     st.title("Machine Learning App")
-    st.write("This app will predict your obesity level!")
+    st.info("This app will predict your obesity level!")
     
     # Load artifacts
     standard_scaler, robust_scaler, model, target_mapping, label_encoders = load_artifacts()
     
     # 1. Show Raw Data
-    st.header("Raw Data")
-    st.subheader("Input Features (X)")
+    with st.expander(**Data**):
+        st.write("This is raw data")
+        df = pd.read_csv("ObesityDataSet_raw_and_data_sinthetic.csv")
+        df
+
+        st.write(**X**)
+        input_df
+        st.write("y")
+        output_df
+
+    
     st.write(input_df.head())
     
     st.subheader("Target Variable (y)")
