@@ -135,9 +135,9 @@ def main():
     # for col, options in categorical_cols.items():
     #     user_input[col] = st.selectbox(col, options)
 
-    df = encode(df)
-    df = scaling(df)
-    prediction = predict_model(model, df)
+    df = encode(input_df)
+    df = scaling(input_df)
+    prediction = predict_model(model, input_df)
     
     # #preprocess user input
     # user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
