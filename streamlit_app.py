@@ -86,48 +86,52 @@ def main():
     CALC = st.selectbox('CALC', ('Sometimes', 'no', 'Frequently', 'Always'))
     MTRANS = st.selectbox('MTRANS', ('Public_Transportation', 'Automobile', 'Walking', 'Motorbike', 'Bike'))
     
-    # Input Data for Program
+    #input data to df
     user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-    df = load_input(user_input)
+    df = input_user_to_df(user_input)
 
     st.write('Data input by user')
     df
     
-    # Numerical Inputs (using st.slider)
-    numerical_cols = {
-        "Age": (14, 61),
-        "Height": (1.45, 1.98),
-        "Weight": (39, 173),
-        "FCVC": (1, 3),
-        "NCP": (1, 4),
-        "CH2O": (1, 3),
-        "FAF": (0, 3),
-        "TUE": (0, 2),
-    }
+    # #numerical inputs
+    # numerical_cols = {
+    #     "Age": (14, 61),
+    #     "Height": (1.45, 1.98),
+    #     "Weight": (39, 173),
+    #     "FCVC": (1, 3),
+    #     "NCP": (1, 4),
+    #     "CH2O": (1, 3),
+    #     "FAF": (0, 3),
+    #     "TUE": (0, 2),
+    # }
     
     # for col, (min_val, max_val) in numerical_cols.items():
     #     user_input[col] = st.slider(col, min_value=min_val, max_value=max_val, value=(min_val + max_val) / 2)
     
-    # Categorical Inputs (using st.selectbox)
-    categorical_cols = {
-        "Gender": ["Male", "Female"],
-        "family_history_with_overweight": ["yes", "no"],
-        "FAVC": ["Sometimes", "Always"],
-        "CAEC": ["Sometimes", "Always"],
-        "SMOKE": ["yes", "no"],
-        "SCC": ["yes", "no"],
-        "CALC": ["Sometimes", "Always"],
-        "MTRANS": ["Public_Transportation", "Motorbike", "Walking", "Bike", "Car"],
-    }
+    #categorical inputs
+    # categorical_cols = {
+    #     "Gender": ["Male", "Female"],
+    #     "family_history_with_overweight": ["yes", "no"],
+    #     "FAVC": ["Sometimes", "Always"],
+    #     "CAEC": ["Sometimes", "Always"],
+    #     "SMOKE": ["yes", "no"],
+    #     "SCC": ["yes", "no"],
+    #     "CALC": ["Sometimes", "Always"],
+    #     "MTRANS": ["Public_Transportation", "Motorbike", "Walking", "Bike", "Car"],
+    # }
 
     # df = 
     # df = sca
     
     # for col, options in categorical_cols.items():
     #     user_input[col] = st.selectbox(col, options)
+
+    df = encode(df)
+    df = scaling(df)
+    prediction = predict_model(model, df)
     
-    #preprocess user input
-    user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
+    # #preprocess user input
+    # user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
     
     #predict probabilities
     st.write("Obesity Prediction")
