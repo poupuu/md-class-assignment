@@ -132,8 +132,8 @@ def main():
         "MTRANS": ["Public_Transportation", "Motorbike", "Walking", "Bike", "Car"],
     }
 
-    df = 
-    df = sca
+    # df = 
+    # df = sca
     
     # for col, options in categorical_cols.items():
     #     user_input[col] = st.selectbox(col, options)
