@@ -130,7 +130,7 @@ def main():
     st.write('Data input by user')
     temp_df
 
-    temp_df = feature_encode(temp_df)
+    temp_df = feature_encode(temp_df, label_encoders)
     
     # #numerical inputs
     # numerical_cols = {
