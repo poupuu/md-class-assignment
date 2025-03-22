@@ -104,13 +104,6 @@ def main():
 
     st.write('Data input by user')
     df
-
-
-    #input by user
-    st.write("Data input by User")
-    user_input = [Gender, Age, Height, Weight, family_history_with_overweight, FAVC, FCVC, NCP, CAEC, SMOKE, CH2O, SCC, FAF, TUE, CALC, MTRANS]
-    df = input_to_df(user_input)
-    st.table(user_input_df)
     
     # Numerical Inputs (using st.slider)
     numerical_cols = {
@@ -142,10 +135,10 @@ def main():
     for col, options in categorical_cols.items():
         user_input[col] = st.selectbox(col, options)
     
-    # 6. Preprocess User Input
+    #preprocess user input
     user_input_scaled = preprocess_input(user_input, label_encoders, standard_scaler, robust_scaler)
     
-    # 7. Predict Probabilities
+    #predict probabilities
     st.header("Obesity Prediction")
     probabilities = model.predict_proba(user_input_scaled)
     prob_df = pd.DataFrame(probabilities, columns=target_mapping.keys()).T
