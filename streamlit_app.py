@@ -39,15 +39,17 @@ def input_user_to_df(input):
 #     return df
 ###
 
-def feature_encode(df, label_encoders):
-    for column in df.columns:
-        if column in label_encoders: 
-            try:
-                df[column] = label_encoders[column].fit_transform(df[column])
-            except Exception as e:
-                st.error(f"Error encoding column '{column}': {e}")
-                raise
-    return df
+# def feature_encode(df, label_encoders):
+#     for column in df.columns:
+#         if column in label_encoders: 
+#             try:
+#                 df[column] = label_encoders[column].fit_transform(df[column])
+#             except Exception as e:
+#                 st.error(f"Error encoding column '{column}': {e}")
+#                 raise
+#     return df
+
+feature_encode = label_encoder()
 
 # def scaling(df):
 #     if df[column] == df["Height"]:
