@@ -10,7 +10,6 @@ import joblib
 
 #load .pkl
 label_encoder = joblib.load("label_encoder.pkl")
-target_encoded = joblib.load("encoded_target_variable.pkl")
 standard_scaler = joblib.load("standard_scaler.pkl")
 robust_scaler = joblib.load("robust_scaler.pkl")
 model = joblib.load("fine_tuned_model.pkl")
