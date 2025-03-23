@@ -1,4 +1,3 @@
-#masukin pkl baru
 #manual mapping buat target variable
 
 import streamlit as st
