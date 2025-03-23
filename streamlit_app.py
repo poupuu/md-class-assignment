@@ -43,7 +43,7 @@ def feature_encode(df, label_encoders):
     for column in df.columns:
         if column in label_encoders: 
             try:
-                df[column] = label_encoders[column].fit_transform(df[column])
+                df[column] = label_encoders[column].transform(df[column])
             except Exception as e:
                 st.error(f"Error encoding column '{column}': {e}")
                 raise
