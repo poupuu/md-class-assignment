@@ -6,11 +6,15 @@ import matplotlib.pyplot as plt
 import joblib
 
 #load .pkl
-target_encoder = joblib.load("encoded_target_variable.pkl")
-label_encoder = joblib.load("label_encoders.pkl")
-standard_scaler = joblib.load("standard_scaler.pkl")
-robust_scaler = joblib.load("robust_scaler.pkl")
-model = joblib.load("fine_tuned_model.pkl")
+try:
+    target_encoder = joblib.load("encoded_target_variable.pkl")
+    label_encoder = joblib.load("label_encoders.pkl")
+    standard_scaler = joblib.load("standard_scaler.pkl")
+    robust_scaler = joblib.load("robust_scaler.pkl")
+    model = joblib.load("fine_tuned_model.pkl")
+    print("Semua file .pkl berhasil dimuat!")
+except Exception as e:
+    print(f"Error loading pickle files: {e}")
 
 # #load user input
 # def load_input(user_input):
