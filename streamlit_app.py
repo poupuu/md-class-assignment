@@ -36,11 +36,11 @@ def input_user_to_df(input):
 #     return df
 ###
 
-def feature_encode(df, label_encoders):
+def feature_encode(df, label_encoder):
     for column in df.columns:
-        if column in label_encoders: 
+        if column in label_encoder: 
             try:
-                df[column] = label_encoders[column].transform(df[column])
+                df[column] = label_encoder[column].transform(df[column])
             except Exception as e:
                 st.error(f"Error encoding column '{column}': {e}")
                 raise
@@ -58,14 +58,10 @@ def standard_scaling(df):
     for column in df.columns:
         if column == "Height":
             df[[column]] = standard_scaler.transform(df[[column]])
-    return df
-
-def robust_scaling(df):
-    for column in df.columns:
-        if column != "Height":
+        else :
             df[[column]] = robust_scaler.transform(df[[column]])
     return df
-    
+
 # def scaling(df, standard_scaler, robust_scaler):
 #     for column in df.columns:
 #         if column == "Height": 
